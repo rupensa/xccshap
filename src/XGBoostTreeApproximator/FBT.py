@@ -181,6 +181,9 @@ class FBT():
 
     def dt_n_nodes(self):
         return self.tree.number_of_children()
+    
+    def dt_n_leaves(self):
+        return self.tree.number_of_leaves()
 
     def dt_depth(self):
         return self.tree.count_depth()

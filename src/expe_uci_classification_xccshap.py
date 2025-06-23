@@ -12,6 +12,7 @@ import os.path
 import warnings
 import os
 from time import time
+import pickle
 
 rng = np.random.RandomState(42)
 RANDOM_SEED = 42
@@ -55,6 +56,8 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       surr_test_mcc = []
       surr_test_avg_pl = []
       surr_test_std_pl = []
+      surr_test_nodes = []
+      surr_test_depth = []
       shap_time = []
       surr_time = []
       total_time = []
@@ -97,8 +100,8 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       surr_model.fit(df_X_train,df_y_train)
       end_time = time()
       y_test_predicted_surr=surr_model.predict(df_X_test)
-      print(surr_model.dt_n_nodes())
-      print(surr_model.dt_depth())
+      surr_test_nodes.append(surr_model.dt_n_nodes())
+      surr_test_depth.append(surr_model.dt_depth())
       surr_test_acc.append(accuracy_score(y_predicted,y_test_predicted_surr))
       surr_test_f1.append(f1_score(y_predicted,y_test_predicted_surr, average='macro'))
       surr_test_mcc.append(matthews_corrcoef(y_predicted,y_test_predicted_surr))
@@ -141,6 +144,8 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       data["surr_test_mcc"] = surr_test_mcc
       data["surr_test_avg_pl"] = surr_test_avg_pl
       data["surr_test_std_pl"] = surr_test_std_pl
+      data["surr_test_nodes"] = surr_test_nodes
+      data["surr_test_depth"] = surr_test_depth
       data["shap_time"] = shap_time
       data["surr_time"] = surr_time
       data["total_time"] = total_time
@@ -150,6 +155,11 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       output_file = os.path.join(output_path, output_file_name)
       out_table=pd.DataFrame(data)
       out_table.to_csv(output_file, index=False)
+      pkl_file_name = "xccshap_model_"+dataset_name.replace(" ", "_")+"_"+target_col.replace(" ", "_")+".pkl"
+      pkl_file = os.path.join(output_path, pkl_file_name)
+      with open(pkl_file, 'wb') as fpkl:
+         pickle.dump(surr_model, fpkl, pickle.HIGHEST_PROTOCOL)
+
 
 def main(argv):
    output_path = '.'

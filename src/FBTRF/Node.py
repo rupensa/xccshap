@@ -8,7 +8,7 @@ class Node():
         self.mask = mask
         self.right=None
         self.left=None
-        
+
     def split(self,df):
         #if np.sum(self.mask)==1 or self.has_same_class(df):
         if np.sum(self.mask) == 1:
@@ -105,12 +105,16 @@ class Node():
         return entropy(x/x.sum())
     def count_depth(self):
         if self.right==None:
-            return 1
+            return 0
         return max(self.left.count_depth(),self.right.count_depth())+1
     def number_of_children(self):
         if self.right==None:
             return 1
         return 1+self.right.number_of_children()+self.left.number_of_children()
+    def number_of_leaves(self):
+        if self.right==None:
+            return 1
+        return self.right.number_of_leaves()+self.left.number_of_leaves()
     def has_same_class(self,df):
         labels=set([np.argmax(l) for l in df['probas'][self.mask]])
         if len(labels)>1:

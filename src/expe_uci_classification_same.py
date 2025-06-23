@@ -11,6 +11,7 @@ from SAME.SAME import getExplainer
 import warnings
 import os
 from time import time
+import pickle
 
 rng = np.random.RandomState(42)
 RANDOM_SEED = 42
@@ -36,6 +37,8 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       surr_test_mcc = []
       surr_test_avg_pl = []
       surr_test_std_pl = []
+      surr_test_nodes = []
+      surr_test_depth = []
       nclass = []
       dsname = []
       dstarget = []
@@ -68,6 +71,20 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       surr_test_mcc.append(matthews_corrcoef(y_predicted,y_test_predicted_surr))
       mpl = np.mean(depths)
       stdpl = np.std(depths)
+      res = surr_model.complexity()
+      dept = res[0]
+      no_nodes = res[1]
+      leaves = res[2]
+      avg_path_len = res[3]
+      avg_no_feats = res[4]
+      print(dept)
+      print(no_nodes)
+      print(leaves)
+      print(avg_path_len)
+      print(avg_no_feats)
+      print(surr_model.dt_n_nodes())
+      print(surr_model.dt_n_leaves())
+      print(surr_model.dt_depth())
       surr_test_avg_pl.append(mpl)
       surr_test_std_pl.append(stdpl)
       nclass.append(df_y[target_col].nunique())
@@ -105,6 +122,10 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       output_file = os.path.join(output_path, output_file_name)
       out_table=pd.DataFrame(data)
       out_table.to_csv(output_file, index=False)
+      pkl_file_name = "same_model_"+dataset_name.replace(" ", "_")+"_"+target_col.replace(" ", "_")+".pkl"
+      pkl_file = os.path.join(output_path, pkl_file_name)
+      with open(pkl_file, 'wb') as fpkl:
+         pickle.dump(surr_model, fpkl, pickle.HIGHEST_PROTOCOL)
 
 def main(argv):
    output_path = '.'

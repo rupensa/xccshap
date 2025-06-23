@@ -44,3 +44,6 @@ class FBTRF():
 
     def dt_depth(self):
         return self.model.count_depth()
+    
+    def dt_n_leaves(self):
+        return self.model.number_of_leaves()

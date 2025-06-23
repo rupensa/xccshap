@@ -6,6 +6,7 @@ from sklearn.tree._tree import Tree
 import pydotplus
 from sklearn import tree
 import sys
+import matplotlib.pyplot as plt
 
 MAX_JOBS = 1
 parameters =  { 'dtc' : 
@@ -151,13 +152,18 @@ class XCCShapSurrogate():
         V = np.append(V, labels, axis=1)
         return self.dt_model.decision_path(V)
     
-    def plot_tree(self, **kwargs):
+    def plot_tree(self, filename=None, **kwargs):
         if 'feature_names' in kwargs:
             feature_names=kwargs.pop('feature_names')
             feature_names=np.concatenate((feature_names, ['XCCSCluster']), axis=0)
         else:
             feature_names=None
-        tree.plot_tree(self.dt_model, feature_names=feature_names, **kwargs)        
+        plt.figure()
+        tree.plot_tree(self.dt_model, feature_names=feature_names, **kwargs)
+        if (filename is None):
+            filename = 'tree.png'
+        plt.savefig(filename,format='png',bbox_inches = "tight")
+        
 
     def plot_decision_path(self, decision_paths, filename=None, feature_names=None, class_names=None):
         feature_names=np.concatenate((feature_names, ['XCCSCluster']), axis=0)
@@ -201,5 +207,8 @@ class XCCShapSurrogate():
     
     def dt_depth(self):
         return self.dt_model.get_depth()
+    
+    def dt_n_leaves(self):
+        return self.dt_model.get_n_leaves()
         
 

@@ -145,6 +145,42 @@ class SuperNode():
         self.labels = labels
         self.intervals = intervals
         self._features_involved = None # if bootstrap features is false
+
+    def complexity(self):
+        path_lenghts = []
+        averages = []
+        def complexSuper(radix,level=0,n_feat_used=0):
+            if radix.is_leaf:
+                path_lenghts.append(level)
+                return 0
+            else:
+                if radix._weights is None:
+                    my_feats = 1
+                else:
+                    my_feats = len(set(radix._features_involved))
+                res = np.array([complexSuper(c,level+1,n_feat_used+my_feats) for c in radix.children])
+                return 1+np.sum(res)
+        res = complexSuper(self)
+        return np.max(path_lenghts),res,len(path_lenghts),np.mean(path_lenghts),np.mean(averages)
+    
+    def dt_n_nodes(self):
+        if self.is_leaf:
+            return 1
+        res = np.array([c.dt_n_nodes() for c in self.children])
+        return 1+np.sum(res)
+    
+    def dt_n_leaves(self):
+        if self.is_leaf:
+            return 1
+        res = np.array([c.dt_n_leaves() for c in self.children])
+        return np.sum(res)
+    
+    def dt_depth(self):
+        if self.is_leaf:
+            return 0
+        res = np.array([c.dt_depth() for c in self.children])
+        return max(res)+1
+    
     def predict(self,X,feature_names):
         def predict_datum(node,x,feature_names,depth):  
             if node.is_leaf:
