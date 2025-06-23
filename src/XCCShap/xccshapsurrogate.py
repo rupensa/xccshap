@@ -196,5 +196,10 @@ class XCCShapSurrogate():
             filename = 'tree.png'
         graph.write_png(filename)
 
+    def dt_n_nodes(self):
+        return self.dt_model.tree_.node_count
+    
+    def dt_depth(self):
+        return self.dt_model.get_depth()
         
 

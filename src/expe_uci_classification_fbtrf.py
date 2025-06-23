@@ -63,6 +63,8 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       surr_test_acc.append(accuracy_score(y_predicted,y_test_predicted_surr))
       surr_test_f1.append(f1_score(y_predicted,y_test_predicted_surr, average='macro'))
       surr_test_mcc.append(matthews_corrcoef(y_predicted,y_test_predicted_surr))
+      print(surr_model.dt_n_nodes())
+      print(surr_model.dt_depth())
       mpl = np.mean(depths)
       stdpl = np.std(depths)
       surr_test_avg_pl.append(mpl)

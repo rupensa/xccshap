@@ -38,5 +38,9 @@ class FBTRF():
             depths.append(depth)
         predictions=[self.rf.classes_[i] for i in np.array([np.argmax(prob) for prob in probas])]
         return predictions, depths
+    
+    def dt_n_nodes(self):
+        return self.model.number_of_children()
 
-
+    def dt_depth(self):
+        return self.model.count_depth()

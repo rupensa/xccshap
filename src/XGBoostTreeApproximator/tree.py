@@ -18,7 +18,8 @@ class Tree():
         :param splitting_values: A dictionary in ehich keys are features and values are splitting values ordered by frequency
         :param max_depth: Tree maximum depth
         """
-
+        self.right=None
+        self.left=None
         self.conjunctions = conjunctions
         self.splitting_values = splitting_values
         self.max_depth = max_depth
@@ -129,7 +130,16 @@ class Tree():
         else:
             probas, depth = self.right.predict_instance_proba_and_depth(inst)
             return probas, depth + 1
-
+    
+    def count_depth(self):
+        if self.right==None:
+            return 1
+        return max(self.left.count_depth(),self.right.count_depth())+1
+    
+    def number_of_children(self):
+        if self.right==None:
+            return 1
+        return 1+self.right.number_of_children()+self.left.number_of_children()
 
 def select_splitting_feature_by_entropy(conjunctions, splitting_values):
     """

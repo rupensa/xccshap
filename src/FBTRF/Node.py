@@ -6,6 +6,9 @@ EPSILON=0.000001
 class Node():
     def __init__(self,mask):
         self.mask = mask
+        self.right=None
+        self.left=None
+        
     def split(self,df):
         #if np.sum(self.mask)==1 or self.has_same_class(df):
         if np.sum(self.mask) == 1:

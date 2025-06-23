@@ -102,6 +102,8 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       surr_model = gridsearchFBT(df_X_train,df_y_train,class_model,df_X_train.columns,target_col,parameters=[3,4,5,10,100])
       end_time = time()
       y_test_predicted_surr=surr_model.predict(df_X_test)
+      print(surr_model.dt_n_nodes())
+      print(surr_model.dt_depth())
       surr_test_acc.append(accuracy_score(y_predicted,y_test_predicted_surr))
       surr_test_f1.append(f1_score(y_predicted,y_test_predicted_surr, average='macro'))
       surr_test_mcc.append(matthews_corrcoef(y_predicted,y_test_predicted_surr))
