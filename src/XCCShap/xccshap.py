@@ -110,32 +110,34 @@ class XCCShap():
         x[is_smaller_than_kth] = 0
         return x
 
-    def plot_reorganized_matrix(self, precision=0.2, markersize=0.9):
-        plt.style.use('seaborn-muted') 
-        row_indices = np.argsort(self.row_labels)
-        col_indices = np.argsort(self.col_labels)
+    def plot_reorganized_matrix(self, filename=None, precision=0.2, markersize=0.9):
+        plt.style.use('seaborn-v0_8-muted') 
+        row_indices = np.argsort(self.row_labels_)
+        col_indices = np.argsort(self.col_labels_)
         X_reorg = self.shapmat[row_indices, :]
         X_reorg = X_reorg[:, col_indices]
         plt.title('Coclustering results')
         plt.spy(X_reorg, precision=precision, markersize=0.3, aspect='auto', color='black')
         self._remove_ticks()
-        plt.show()
+        if (filename is None):
+            plt.show()
+        plt.savefig(filename,format='png',bbox_inches = "tight")
 
     def _remove_ticks(self):
         plt.tick_params(axis='both', which='both', bottom='off', top='off',
                         right='off', left='off')
 
     def plot_cc_distribution(self):
-        unique, counts = np.unique(self.row_labels, return_counts=True)
+        unique, counts = np.unique(self.row_labels_, return_counts=True)
         plt.bar(unique, counts, width=0.8, bottom=None, align='center')
         plt.title('Row clusters distribution')
         plt.show()
-        unique, counts = np.unique(self.col_labels, return_counts=True)
+        unique, counts = np.unique(self.col_labels_, return_counts=True)
         plt.bar(unique, counts, width=0.8, bottom=None, align='center')
         plt.title('Column clusters distribution')
         plt.show()
 
-    def plot_shap_coclusters(self, labels=None):
+    def plot_shap_coclusters(self, filename=None, labels=None):
         idx_labels = np.arange(np.shape(self.shapmat)[1])
         clust_lab = np.unique(self.row_labels_, return_counts=False).astype(int)
         clust_lab_col = np.unique(self.col_labels_, return_counts=False).astype(int)
@@ -154,9 +156,13 @@ class XCCShap():
                 axs[k,l].set_xticklabels(sublabels, rotation=45, ha="right")
                 ##axs[k,l].xticks(rotation=45, ha="right")
         plt.subplots_adjust(hspace=0.9)
-        plt.show()
+        if (filename is None):
+            plt.show()
+        plt.savefig(filename,format='png',bbox_inches = "tight")
 
-    def plot_shap_all(self, labels=None):
+    def plot_shap_all(self, filename=None, labels=None):
         plt.boxplot(self.shapmat,labels=labels)
         plt.xticks(rotation=45, ha="right")
-        plt.show()
+        if (filename is None):
+            plt.show()
+        plt.savefig(filename,format='png',bbox_inches = "tight")
