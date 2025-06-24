@@ -32,6 +32,9 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       surr_test_mcc = []
       surr_test_avg_pl = []
       surr_test_std_pl = []
+      surr_test_nodes = []
+      surr_test_leaves = []
+      surr_test_depth = []
       nclass = []
       dsname = []
       dstarget = []
@@ -64,9 +67,9 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       surr_test_acc.append(accuracy_score(y_predicted,y_test_predicted_surr))
       surr_test_f1.append(f1_score(y_predicted,y_test_predicted_surr, average='macro'))
       surr_test_mcc.append(matthews_corrcoef(y_predicted,y_test_predicted_surr))
-      print(surr_model.dt_n_nodes())
-      print(surr_model.dt_depth())
-      print(surr_model.dt_n_leaves())
+      surr_test_nodes.append(surr_model.dt_n_nodes())
+      surr_test_depth.append(surr_model.dt_depth())
+      surr_test_leaves.append(surr_model.dt_n_leaves())
       mpl = np.mean(depths)
       stdpl = np.std(depths)
       surr_test_avg_pl.append(mpl)
@@ -99,6 +102,9 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       data["surr_test_mcc"] = surr_test_mcc
       data["surr_test_avg_pl"] = surr_test_avg_pl
       data["surr_test_std_pl"] = surr_test_std_pl
+      data["surr_test_nodes"] = surr_test_nodes
+      data["surr_test_leaves"] = surr_test_leaves
+      data["surr_test_depth"] = surr_test_depth
       data["total_time"] = total_time
       print('Done.')
       out_table=pd.DataFrame(data)

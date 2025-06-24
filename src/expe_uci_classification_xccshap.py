@@ -58,7 +58,9 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       surr_test_std_pl = []
       surr_test_nodes = []
       surr_test_depth = []
+      surr_test_leaves = []
       shap_time = []
+      exp_time = []
       surr_time = []
       total_time = []
       print('Using target: ',target_col)
@@ -78,9 +80,7 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       sample=None
       print('Explaining model...')
       xccshap_model = XCCShap(model=class_model, data=sample, explainer=explainer)
-      start_time = time()
-      shapmat, row_labels, col_labels = xccshap_model.explain(df_X_train)
-      exp_time = time()
+      shapmat, row_labels, col_labels, exp_time_val, shap_time_val = xccshap_model.explain(df_X_train)
       tau_x = xccshap_model.tau_x_
       tau_y = xccshap_model.tau_y_
       nclust = []
@@ -97,11 +97,14 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       tauy = []
       print('Computing surrogate models...')
       surr_model=XCCShapSurrogate(xccshap_model)
+      start_time = time()
       surr_model.fit(df_X_train,df_y_train)
       end_time = time()
+      surr_time_val = end_time-start_time
       y_test_predicted_surr=surr_model.predict(df_X_test)
       surr_test_nodes.append(surr_model.dt_n_nodes())
       surr_test_depth.append(surr_model.dt_depth())
+      surr_test_leaves.append(surr_model.dt_n_leaves())
       surr_test_acc.append(accuracy_score(y_predicted,y_test_predicted_surr))
       surr_test_f1.append(f1_score(y_predicted,y_test_predicted_surr, average='macro'))
       surr_test_mcc.append(matthews_corrcoef(y_predicted,y_test_predicted_surr))
@@ -120,9 +123,10 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       ncols_train.append(np.shape(df_X_train)[1])
       nrows_test.append(np.shape(df_X_test)[0])
       ncols_test.append(np.shape(df_X_test)[1])
-      shap_time.append(exp_time-start_time)
-      surr_time.append(end_time-exp_time)
-      total_time.append(end_time-start_time)
+      shap_time.append(shap_time_val)
+      exp_time.append(exp_time_val)
+      surr_time.append(surr_time_val)
+      total_time.append(shap_time_val+exp_time_val+surr_time_val)
       data = {}
       data["dataset"] = dsname
       data["class"] = dstarget
@@ -145,8 +149,10 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       data["surr_test_avg_pl"] = surr_test_avg_pl
       data["surr_test_std_pl"] = surr_test_std_pl
       data["surr_test_nodes"] = surr_test_nodes
+      data["surr_test_leaves"] = surr_test_leaves
       data["surr_test_depth"] = surr_test_depth
       data["shap_time"] = shap_time
+      data["exp_tine"] = exp_time
       data["surr_time"] = surr_time
       data["total_time"] = total_time
       print('Done.')

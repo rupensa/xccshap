@@ -39,6 +39,7 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       surr_test_std_pl = []
       surr_test_nodes = []
       surr_test_depth = []
+      surr_test_leaves = []
       nclass = []
       dsname = []
       dstarget = []
@@ -71,20 +72,9 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       surr_test_mcc.append(matthews_corrcoef(y_predicted,y_test_predicted_surr))
       mpl = np.mean(depths)
       stdpl = np.std(depths)
-      res = surr_model.complexity()
-      dept = res[0]
-      no_nodes = res[1]
-      leaves = res[2]
-      avg_path_len = res[3]
-      avg_no_feats = res[4]
-      print(dept)
-      print(no_nodes)
-      print(leaves)
-      print(avg_path_len)
-      print(avg_no_feats)
-      print(surr_model.dt_n_nodes())
-      print(surr_model.dt_n_leaves())
-      print(surr_model.dt_depth())
+      surr_test_nodes.append(surr_model.dt_n_nodes())
+      surr_test_leaves.append(surr_model.dt_n_leaves())
+      surr_test_depth.append(surr_model.dt_depth())
       surr_test_avg_pl.append(mpl)
       surr_test_std_pl.append(stdpl)
       nclass.append(df_y[target_col].nunique())
@@ -115,6 +105,9 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       data["surr_test_mcc"] = surr_test_mcc
       data["surr_test_avg_pl"] = surr_test_avg_pl
       data["surr_test_std_pl"] = surr_test_std_pl
+      data["surr_test_nodes"] = surr_test_nodes
+      data["surr_test_leaves"] = surr_test_leaves
+      data["surr_test_depth"] = surr_test_depth   
       data["total_time"] = total_time
       print('Done.')
       out_table=pd.DataFrame(data)
@@ -151,7 +144,7 @@ def main(argv):
          classifier = arg
       elif opt in ("-i", "--id"):
          id_dataset = int(arg)
-   print("FBTRF: test using "+classifier+" on: "+str(id_dataset))
+   print("SAME: test using "+classifier+" on: "+str(id_dataset))
    if (classifier=='rf'):
       ccshap_full(id_dataset, output_path, model_path, max_depth=max_depth, model_type=RandomForestClassifier(verbose=0))
 if __name__ == "__main__":

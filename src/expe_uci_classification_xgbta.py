@@ -77,6 +77,7 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       surr_test_std_pl = []
       surr_test_nodes = []
       surr_test_depth = []
+      surr_test_leaves = []
       nclass = []
       dsname = []
       dstarget = []
@@ -113,7 +114,7 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       surr_test_std_pl.append(stdpl)
       surr_test_nodes.append(surr_model.dt_n_nodes())
       surr_test_depth.append(surr_model.dt_depth())
-      print(surr_model.dt_n_leaves())
+      surr_test_leaves.append(surr_model.dt_n_leaves())
       nclass.append(df_y[target_col].nunique())
       dsname.append(dataset_name)
       dstarget.append(target_col)
@@ -143,6 +144,7 @@ def ccshap_full(id_dataset, output_path, model_path, max_depth=100, model_type =
       data["surr_test_avg_pl"] = surr_test_avg_pl
       data["surr_test_std_pl"] = surr_test_std_pl
       data["surr_test_nodes"] = surr_test_nodes
+      data["surr_test_leaves"] = surr_test_leaves
       data["surr_test_depth"] = surr_test_depth
       data["total_time"] = total_time
       print('Done.')
