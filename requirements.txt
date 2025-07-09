@@ -1,5 +1,4 @@
 fasttreeshap==0.1.6
-graphviz==0.21
 pip-chill==1.0.3
 pydotplus==2.0.2
 pyod==2.0.0
