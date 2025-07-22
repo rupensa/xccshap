@@ -107,13 +107,14 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
             df_y_train = df_y_train_orig[df_X_train.index]
             xccshap_model = XCCShap(explainer=explainer, model=class_model, data=sample)
             start_time = time()
-            shapmat, row_labels, col_labels = xccshap_model.explain(df_X_train)
-            exp_time = time()
-            tau_x = xccshap_model.tau_x_
-            tau_y = xccshap_model.tau_y_
-            print('Computing surrogate models...')
-            surr_model=XCCShapSurrogate(xccshap_model)
             try:
+               shapmat, row_labels, col_labels = xccshap_model.explain(df_X_train)
+               exp_time = time()
+               tau_x = xccshap_model.tau_x_
+               tau_y = xccshap_model.tau_y_
+               print('Computing surrogate models...')
+               surr_model=XCCShapSurrogate(xccshap_model)
+               #try:
                surr_model.fit(df_X_train,df_y_train)
             except:
                print(f'failed with sample size: {k}')
@@ -177,7 +178,7 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
 def main(argv):
    output_path = ''
    id_dataset = 53
-   classifier = 'rf'
+   classifier = 'xgb'
    model_path = '.'
    warnings.filterwarnings('ignore') 
    opts, args = getopt.getopt(argv,"hi:o:",["help","out=","id=","modelpath=","params=","classifier="])
