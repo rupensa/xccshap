@@ -79,7 +79,11 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       surr_acc_test_mcc = []
       surr_test_avg_pl = []
       surr_test_std_pl = []
+      surr_test_nodes = []
+      surr_test_depth = []
+      surr_test_leaves = []
       shap_time = []
+      exp_time = []
       surr_time = []
       total_time = []
       print('Using target: ',target_col)
@@ -106,46 +110,46 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
             df_X_train = df_X_train_orig.sample(n=k, random_state=rng.randint(0,200))
             df_y_train = df_y_train_orig[df_X_train.index]
             xccshap_model = XCCShap(explainer=explainer, model=class_model, data=sample)
-            start_time = time()
             try:
-               shapmat, row_labels, col_labels = xccshap_model.explain(df_X_train)
-               exp_time = time()
+               shapmat, row_labels, col_labels, exp_time_val, shap_time_val = xccshap_model.explain(df_X_train)
                tau_x = xccshap_model.tau_x_
                tau_y = xccshap_model.tau_y_
                print('Computing surrogate models...')
                surr_model=XCCShapSurrogate(xccshap_model)
-               #try:
+               start_time = time()
                surr_model.fit(df_X_train,df_y_train)
-               end_time = time()
-               samplesize.append(k)
-               y_test_predicted_surr=surr_model.predict(df_X_test)
-               surr_test_acc.append(accuracy_score(y_predicted,y_test_predicted_surr))
-               surr_test_f1.append(f1_score(y_predicted,y_test_predicted_surr, average='macro'))
-               surr_test_mcc.append(matthews_corrcoef(y_predicted,y_test_predicted_surr))
-               surr_acc_test_acc.append(accuracy_score(df_y_test.to_numpy(),y_test_predicted_surr))
-               surr_acc_test_f1.append(f1_score(df_y_test.to_numpy(),y_test_predicted_surr, average='macro'))
-               surr_acc_test_mcc.append(matthews_corrcoef(df_y_test.to_numpy(),y_test_predicted_surr))
-               taux.append(tau_x)
-               tauy.append(tau_y)
-               shap_time.append(exp_time-start_time)
-               surr_time.append(end_time-exp_time)
-               total_time.append(end_time-start_time)
-               mpl, stdpl = mean_length_path(surr_model, df_X_test, np.shape(df_X_test)[1])
-               surr_test_avg_pl.append(mpl)
-               surr_test_std_pl.append(stdpl)
-               nclust.append(len(np.unique(row_labels)))
-               nclass.append(df_y[target_col].nunique())
-               dsname.append(dataset_name)
-               dstarget.append(target_col)
-               nrows.append(np.shape(df_X_all)[0])
-               ncols.append(np.shape(df_X_all)[1])
-               nrows_train.append(np.shape(df_X_train_orig)[0])
-               ncols_train.append(np.shape(df_X_train_orig)[1])
-               nrows_test.append(np.shape(df_X_test)[0])
-               ncols_test.append(np.shape(df_X_test)[1])
             except:
                print(f'failed with sample size: {k}')
                continue
+            end_time = time()
+            surr_time_val = end_time-start_time
+            samplesize.append(k)
+            y_test_predicted_surr=surr_model.predict(df_X_test)
+            surr_test_acc.append(accuracy_score(y_predicted,y_test_predicted_surr))
+            surr_test_f1.append(f1_score(y_predicted,y_test_predicted_surr, average='macro'))
+            surr_test_mcc.append(matthews_corrcoef(y_predicted,y_test_predicted_surr))
+            taux.append(tau_x)
+            tauy.append(tau_y)
+            surr_test_nodes.append(surr_model.dt_n_nodes())
+            surr_test_depth.append(surr_model.dt_depth())
+            surr_test_leaves.append(surr_model.dt_n_leaves())
+            shap_time.append(shap_time_val)
+            exp_time.append(exp_time_val)
+            surr_time.append(surr_time_val)
+            total_time.append(shap_time_val+exp_time_val+surr_time_val)
+            mpl, stdpl = mean_length_path(surr_model, df_X_test, np.shape(df_X_test)[1])
+            surr_test_avg_pl.append(mpl)
+            surr_test_std_pl.append(stdpl)
+            nclust.append(len(np.unique(row_labels)))
+            nclass.append(df_y[target_col].nunique())
+            dsname.append(dataset_name)
+            dstarget.append(target_col)
+            nrows.append(np.shape(df_X_all)[0])
+            ncols.append(np.shape(df_X_all)[1])
+            nrows_train.append(np.shape(df_X_train_orig)[0])
+            ncols_train.append(np.shape(df_X_train_orig)[1])
+            nrows_test.append(np.shape(df_X_test)[0])
+            ncols_test.append(np.shape(df_X_test)[1])
       data = {}
       data['sample'] = samplesize
       data["dataset"] = dsname
@@ -165,7 +169,11 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       data["surr_test_mcc"] = surr_test_mcc
       data["surr_test_avg_pl"] = surr_test_avg_pl
       data["surr_test_std_pl"] = surr_test_std_pl
+      data["surr_test_nodes"] = surr_test_nodes
+      data["surr_test_leaves"] = surr_test_leaves
+      data["surr_test_depth"] = surr_test_depth
       data["shap_time"] = shap_time
+      data["exp_tine"] = exp_time
       data["surr_time"] = surr_time
       data["total_time"] = total_time
       print('Done.')
@@ -177,7 +185,7 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
 
 def main(argv):
    output_path = ''
-   id_dataset = 53
+   id_dataset = 19
    classifier = 'xgb'
    model_path = '.'
    warnings.filterwarnings('ignore') 
