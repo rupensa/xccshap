@@ -96,7 +96,7 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       class_f1.append(f1_score(df_y_test.to_numpy(),y_predicted, average='macro'))
       class_mcc.append(matthews_corrcoef(df_y_test.to_numpy(),y_predicted))
       datasize = min(np.shape(df_X_train_orig)[0]//2, 100)
-      sample_size = [0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00]
+      sample_size = [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00]
       K = [int(len(df_X_train_orig)*r) for r in sample_size]
       for k in K:
          for run in range(10):
