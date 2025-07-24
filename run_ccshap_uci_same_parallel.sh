@@ -1,15 +1,16 @@
 #!/bin/bash
 set -o errexit
+mkdir ./outuci_same
 
-./run_ccshap_uci_same_single.sh datasets_xgb_all1.txt
+./run_ccshap_uci_same_single.sh datasets_xgb_all1.txt &
 pid1=$!
-./run_ccshap_uci_same_single.sh datasets_xgb_all2.txt
+./run_ccshap_uci_same_single.sh datasets_xgb_all2.txt &
 pid2=$!
-./run_ccshap_uci_same_single.sh datasets_xgb_all3.txt
+./run_ccshap_uci_same_single.sh datasets_xgb_all3.txt &
 pid3=$!
-./run_ccshap_uci_same_single.sh datasets_xgb_all4.txt
+./run_ccshap_uci_same_single.sh datasets_xgb_all4.txt &
 pid4=$!
-./run_ccshap_uci_same_single.sh datasets_xgb_all5.txt
+./run_ccshap_uci_same_single.sh datasets_xgb_all5.txt &
 pid5=$!
 
 wait $pid1 && echo "pid1 exited normally" || echo "pid1 exited abnormally with status $?"

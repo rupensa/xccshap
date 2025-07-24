@@ -1,7 +1,6 @@
 #!/bin/bash
 
 
-mkdir ./outuci_same
 while read p;
 do
   echo Processing $p;
