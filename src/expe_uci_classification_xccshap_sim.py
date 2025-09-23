@@ -10,6 +10,7 @@ from XCCShap.xccshapsurrogate import XCCShapSurrogate
 import expe_utils as ccshap
 import os.path
 import warnings
+from scipy.stats import ttest_ind
 import os
 from time import time
 import pickle
@@ -52,6 +53,7 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       match_std = []
       mismatch_avg = []
       mismatch_std = []
+      pvalue = []
       print('Using target: ',target_col)
       df_X_train, df_X_test, df_y_train, df_y_test = train_test_split(df_X, df_y[target_col], test_size=0.3, random_state=rng)
       df_X_all = df_X.to_numpy()
@@ -74,6 +76,7 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       sim_unmatch_ind = np.where(y_predicted!=y_test_predicted_surr)[0].tolist()
       sim_match = [sim_values[i] for i in sim_match_ind]
       sim_mismatch = [sim_values[i] for i in sim_unmatch_ind]
+      pvalue.append(ttest_ind(a=sim_match, b=sim_match, equal_var=False).pvalue.item())
       match_avg.append(np.mean(sim_match))
       match_std.append(np.std(sim_match))
       mismatch_avg.append(np.mean(sim_mismatch))
@@ -87,6 +90,7 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       data["match_std"] = match_std
       data["mismatch_avg"] = mismatch_avg
       data["mismatch_std"] = mismatch_std
+      data["pvalue"] = pvalue
       print('Done.')
       out_table=pd.DataFrame(data)
       output_file_name = "xccshap_simvalues_xccshap_"+dataset_name.replace(" ", "_")+"_"+target_col.replace(" ", "_")+".csv"
