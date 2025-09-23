@@ -19,6 +19,7 @@ class XCoClust(CoClust):
         dataset = dataset/self._tot        
         dataset = self._update_V(dataset)
         V_labels = np.zeros((np.shape(V)[0],1), dtype=float)
+        sim_values = np.zeros((np.shape(V)[0],1), dtype=float)
         _ , T = self._init_contingency_matrix(0)
         S = np.repeat(np.sum(T, axis = 1).reshape((-1,1)), repeats = T.shape[1], axis = 1)
         B = T/np.sum(T, axis = 0) - S
@@ -27,8 +28,9 @@ class XCoClust(CoClust):
             all_tau = np.sum(dataset[i]*B, axis = 1)
             max_tau = np.max(all_tau)
             equal_solutions = np.where(max_tau == all_tau)[0]
-            V_labels[i] = equal_solutions[0]            
-        return np.copy(V_labels).tolist()
+            V_labels[i] = equal_solutions[0]
+            sim_values[i] = max_tau       
+        return np.copy(V_labels).tolist(), np.copy(sim_values).tolist()
 
     def _update_V(self, dataset):
         new_t = np.zeros((np.shape(dataset)[0], self._n_col_clusters), dtype = float)

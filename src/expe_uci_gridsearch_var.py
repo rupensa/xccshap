@@ -42,7 +42,7 @@ def ccshap_full(id_dataset, output_path, classifier, model_type = RandomForestCl
          print('Using random seed: ',rnd_seed)
          df_X_train, df_X_test, df_y_train, df_y_test = train_test_split(df_X, df_y[target_col], test_size=0.3, random_state=rng)
          print('Tuning model...')
-         if (np.shape(df_X_train)[0]<1000):
+         if (np.shape(df_X_train)[0]<2000):
             class_model = ccshap.get_CV_model(df_X_train, df_y_train, model_type, parameters_grid, n_folds=5)   
          else:
             class_model = ccshap.get_CV_model_opt(df_X_train, df_y_train, model_type, parameters_grid, n_folds=5)
@@ -53,7 +53,7 @@ def ccshap_full(id_dataset, output_path, classifier, model_type = RandomForestCl
 
 def main(argv):
    output_path = '.'
-   id_dataset = 53
+   id_dataset = 110
    classifier = 'xgb'
    warnings.filterwarnings('ignore') 
    opts, args = getopt.getopt(argv,"hi:o:",["help","out=","id=","params=","classifier="])

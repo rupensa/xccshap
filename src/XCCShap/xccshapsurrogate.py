@@ -142,13 +142,13 @@ class XCCShapSurrogate():
 
     def predict(self, V):
         shapmat, _ = self.explainer_model._get_shapmat(V)
-        labels =  self.explainer_model.xccmodel.assign_samples(shapmat)
+        labels, sim_values =  self.explainer_model.xccmodel.assign_samples(shapmat)
         V = np.append(V, labels, axis=1)
-        return self.dt_model.predict(V)
+        return self.dt_model.predict(V), sim_values
     
     def decision_path(self, V):
         shapmat, _ = self.explainer_model._get_shapmat(V)
-        labels =  self.explainer_model.xccmodel.assign_samples(shapmat)
+        labels, _ =  self.explainer_model.xccmodel.assign_samples(shapmat)
         V = np.append(V, labels, axis=1)
         return self.dt_model.decision_path(V)
     

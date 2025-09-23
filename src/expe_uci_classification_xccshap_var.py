@@ -105,7 +105,7 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
          end_time = time()
          #xccshap_model.plot_cc_distribution()
          surr_time_val = end_time-start_time
-         y_test_predicted_surr=surr_model.predict(df_X_test)
+         y_test_predicted_surr, _ =surr_model.predict(df_X_test)
          rnd_seed.append(rnd)
          surr_test_nodes.append(surr_model.dt_n_nodes())
          surr_test_depth.append(surr_model.dt_depth())
@@ -177,7 +177,7 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
 def main(argv):
    output_path = '.'
    id_dataset = 53
-   classifier = 'xgb'
+   classifier = 'rf'
    model_path = '.'
    warnings.filterwarnings('ignore') 
    opts, args = getopt.getopt(argv,"hi:o:",["help","out=","id=","modelpath=","classifier="])
