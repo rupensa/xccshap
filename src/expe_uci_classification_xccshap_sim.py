@@ -76,7 +76,8 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       sim_unmatch_ind = np.where(y_predicted!=y_test_predicted_surr)[0].tolist()
       sim_match = [sim_values[i] for i in sim_match_ind]
       sim_mismatch = [sim_values[i] for i in sim_unmatch_ind]
-      pvalue.append(ttest_ind(a=sim_match, b=sim_match, equal_var=False).pvalue.item())
+      pvalue.append(ttest_ind(a=sim_match, b=sim_mismatch, equal_var=False).pvalue.item())
+      print(pvalue)
       match_avg.append(np.mean(sim_match))
       match_std.append(np.std(sim_match))
       mismatch_avg.append(np.mean(sim_mismatch))
