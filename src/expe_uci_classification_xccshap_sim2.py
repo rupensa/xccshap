@@ -77,7 +77,7 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       sim_match = [sim_values[i] for i in sim_match_ind]
       sim_mismatch = [sim_values[i] for i in sim_unmatch_ind]
       #pvalue.append(ttest_ind(a=sim_match, b=sim_mismatch, equal_var=False).pvalue.item())
-      pvalue.append(ranksums(x=sim_match, y=sim_mismatch, alternative='greater').pvalue.item())
+      pvalue.append(mannwhitneyu(x=sim_match, y=sim_mismatch, alternative='greater').pvalue.item())
       print(pvalue)
       match_avg.append(np.mean(sim_match))
       match_std.append(np.std(sim_match))
