@@ -153,7 +153,7 @@ def ccshap_full(id_dataset, output_path, model_path, model_type = RandomForestCl
       data["surr_test_leaves"] = surr_test_leaves
       data["surr_test_depth"] = surr_test_depth
       data["shap_time"] = shap_time
-      data["exp_tine"] = exp_time
+      data["exp_time"] = exp_time
       data["surr_time"] = surr_time
       data["total_time"] = total_time
       print('Done.')
