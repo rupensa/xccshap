@@ -57,6 +57,7 @@ class XCCShapSurrogate():
         new_state['node_count'] = 0
         offset = 0
         lev=0
+        first_i = True
         for k in clust_lab:
             self.model_features[k]=np.array([])
             for l in clust_lab_col:
@@ -111,6 +112,11 @@ class XCCShapSurrogate():
                     res = {key: y.values.tolist().count(key) for key in classes.tolist()}
                     class_count=list(res.values())
                 class_count=np.array([[class_count]])
+                if (first_i):
+                    prev_count=class_count
+                else:
+                    class_count=prev_count-class_count
+                    prev_count=class_count
                 values = np.append(values, class_count, axis=0)
                 for i in range(state[k]['node_count']):
                     state[k]['nodes']['feature'][i]=self.model_features[k][state[k]['nodes']['feature'][i]]
@@ -127,6 +133,7 @@ class XCCShapSurrogate():
                         state[k]['nodes']['right_child'][i] += node[k-1]['right_child']
             new_state['max_depth'] = max(new_state['max_depth'], (state[k]['max_depth']+lev))
             offset += state[k]['node_count']
+            first_i = False
         new_state['node_count'] = offset + self.n_models - 1
         new_state['nodes']=node
         new_state['values']=values
